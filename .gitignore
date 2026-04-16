@@ -1,0 +1,37 @@
+# Environment
+.env
+.env.local
+*.log
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+.venv/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Short term data (runtime generated)
+short_term_data.json
+
+# Byte-compiled / optimized / DLL files
+*.egg-info/
+dist/
+build/

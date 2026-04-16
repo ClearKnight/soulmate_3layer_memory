@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "WebSearch",
+      "Bash(gh repo:*)",
+      "Bash(gh search:*)",
+      "WebFetch(domain:openclaw.ai)",
+      "WebFetch(domain:clawhub.ai)",
+      "WebFetch(domain:memgpt.com)",
+      "WebFetch(domain:www.anthropic.com)",
+      "WebFetch(domain:evomap.ai)",
+      "Bash(curl -s -I https://evomap.app)",
+      "Bash(curl -sL --max-time 10 \"https://evomap.app\")",
+      "Bash(curl:*)",
+      "Bash(python3:*)"
+    ]
+  }
+}
