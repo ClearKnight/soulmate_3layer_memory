@@ -160,8 +160,10 @@ class GEPAdapter:
     def compute_asset_id(asset: dict) -> str:
         """
         Compute SHA-256 content-addressable ID for an asset.
+        Uses canonical JSON format (sort_keys, no default=str) for consistency with EvoMap Hub.
         """
         clean = {k: v for k, v in asset.items() if k != "asset_id"}
-        content_str = json.dumps(clean, sort_keys=True, default=str)
+        # Use compact canonical format - sort keys, no default=str
+        content_str = json.dumps(clean, sort_keys=True, separators=(',', ':'))
         hash_hex = hashlib.sha256(content_str.encode()).hexdigest()
         return f"sha256:{hash_hex}"
