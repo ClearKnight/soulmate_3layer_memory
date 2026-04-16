@@ -18,41 +18,47 @@ SOULMATE_MEMORY_GENE = {
     "category": "innovate",
     "signals_match": [
         "memory", "remember", "forget", "soulmate",
-        "personal", "context", "agent"
+        "personal", "context", "agent", "vector", "embedding",
+        "semantic", "search", "recall"
     ],
-    "summary": "3-layer memory system with human-like forgetting curve simulation",
+    "summary": "3-layer memory system with vector semantic search and human-like forgetting curve",
     "preconditions": [
         "User has provided conversation history",
         "Memory system is initialized"
     ],
     "postconditions": [
-        "Memory is stored in appropriate layer",
-        "Context is updated for future retrieval"
+        "Memory is stored in appropriate layer with vector embedding",
+        "Context is retrieved via semantic similarity search"
     ],
     "strategy": [
         "1. SHORT: Store current session (100 messages, in-memory + file persistence)",
-        "2. RECENT: Store 3-day summaries (SQLite)",
-        "3. SOUL: Store permanent core memories (SQLite)",
-        "4. PROCESS: Ebbinghaus decay, compression, promotion",
-        "5. RETRIEVE: Parallel search, weighted fusion"
+        "2. RECENT: Store 3-day summaries with embeddings (SQLite)",
+        "3. SOUL: Store permanent core memories with embeddings (SQLite)",
+        "4. EMBEDDING: BAAI/bge-small-zh-v1.5 for semantic vectorization",
+        "5. PROCESS: Ebbinghaus decay, compression, promotion",
+        "6. RETRIEVE: Vector similarity search + text fallback"
     ],
     "constraints": {
         "max_files": 10,
         "forbidden_paths": []
     },
     "validation": [
-        "Test memory retrieval accuracy",
+        "Test semantic retrieval (e.g., query 'food' finds 'hot pot')",
         "Verify emotional weight affects recall",
-        "Verify forgetting curve simulation"
+        "Verify forgetting curve simulation",
+        "Test vector similarity scoring"
     ],
     "metadata": {
         "author": "Soulmate Team",
-        "tags": ["memory", "personal", "agent", "forgetting", "evolution"],
-        "description": "A 3-layer memory system that simulates human memory patterns",
-        "version": "0.1.0",
-        "license": "MIT"
+        "tags": ["memory", "personal", "agent", "forgetting", "evolution", "vector", "embedding", "semantic-search"],
+        "description": "A 3-layer memory system with vector semantic search that simulates human memory patterns",
+        "version": "0.2.0",
+        "license": "MIT",
+        "embedding_model": "BAAI/bge-small-zh-v1.5",
+        "embedding_dim": 512
     },
-    "domain": "memory_management"
+    "domain": "memory_management",
+    "asset_id": "sha256:a55e032e299d9248c331dddaf1e21a258c19c13514b4c0591157235aa0f2e041"
 }
 
 
@@ -68,7 +74,8 @@ class GenePublisher:
     async def publish_memory_gene(self) -> dict:
         """Publish the Soulmate 3-layer memory gene."""
         gene = SOULMATE_MEMORY_GENE.copy()
-        gene["asset_id"] = GEPAdapter.compute_asset_id(gene)
+        # Use predefined asset_id for content-addressable iteration
+        gene["asset_id"] = gene.get("asset_id") or GEPAdapter.compute_asset_id(gene)
 
         payload = {
             "protocol": self.adapter.PROTOCOL,

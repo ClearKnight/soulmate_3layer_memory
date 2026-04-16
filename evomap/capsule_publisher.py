@@ -162,3 +162,80 @@ class CapsulePublisher:
         except Exception as e:
             logger.error(f"Failed to publish forgetting capsule: {e}")
             raise
+
+    async def publish_vector_search_capsule(
+        self,
+        user_id: str,
+        query: str,
+        found_memory_id: str,
+        similarity_score: float
+    ) -> dict:
+        """
+        Publish a capsule documenting a successful semantic vector search.
+        """
+        capsule = {
+            "type": "Capsule",
+            "schema_version": "1.5.0",
+            "id": f"capsule_{int(time.time())}_{random.hex(4)}",
+            "trigger": ["semantic_search", "vector_match", "memory_retrieval"],
+            "gene": "gene_soulmate_3layer_memory",
+            "genes_used": ["gene_soulmate_3layer_memory"],
+            "summary": f"Semantic search found memory with similarity {similarity_score:.2f}",
+            "content": {
+                "intent": "Semantic vector search for contextual memory",
+                "strategy": f"Vector similarity search with score {similarity_score:.2f}",
+                "query": query,
+                "outcome": {
+                    "status": "success",
+                    "found_memory_id": found_memory_id,
+                    "similarity_score": similarity_score,
+                    "user_id": user_id
+                }
+            },
+            "confidence": similarity_score,
+            "blast_radius": {"files": 1, "lines": 5},
+            "outcome": {
+                "status": "success",
+                "score": similarity_score
+            },
+            "source_type": "generated",
+            "metadata": {
+                "author": "Soulmate Team",
+                "description": "Vector semantic search event",
+                "embedding_model": "BAAI/bge-small-zh-v1.5",
+                "embedding_dim": 512
+            },
+            "domain": "memory_management"
+        }
+
+        capsule["asset_id"] = GEPAdapter.compute_asset_id(capsule)
+
+        payload = {
+            "protocol": self.adapter.PROTOCOL,
+            "protocol_version": self.adapter.PROTOCOL_VERSION,
+            "message_type": "publish",
+            "message_id": self.adapter._generate_message_id(),
+            "sender_id": self.adapter.node_id,
+            "timestamp": datetime.now().isoformat(),
+            "payload": {
+                "assets": [capsule]
+            }
+        }
+
+        try:
+            response = await self.adapter.client.post(
+                f"{self.adapter.BASE_URL}/a2a/publish",
+                json=payload,
+                headers={"Authorization": f"Bearer {self.adapter.node_secret}"}
+            )
+            response.raise_for_status()
+            result = response.json()
+
+            self.published_capsules.append(capsule["id"])
+            logger.info(f"Published vector search capsule: {capsule['id']}")
+
+            return result
+
+        except Exception as e:
+            logger.error(f"Failed to publish vector search capsule: {e}")
+            raise
